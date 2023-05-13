@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Set Access</title>
+</head>
+<body>
+    <form method="POST" action="">
+        <p> Установить время (везде введите число): </p>
+        <input type="day" name="day">
+        <label>дней  </label>
+        <br>
+        <input type="hour" name="hour">
+        <label>часов  </label>
+        <br>
+        <input type="minute" name="minute">
+        <label>минут   </label>
+        <br>
+        <input type="second" name="second">
+        <label>секунд   </label>
+        <br>
+        <p> Установить пароль (рекомендуется): </p>
+        <input type="password" name="password">
+        <br>
+        <br>
+        <input type="submit">
+    </form>
+    {% if message %}
+        <br>
+        <label> {{ message }} </label>
+    {% endif %}
+</body>
+</html>

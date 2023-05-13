@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Note</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+</head>
+<body>
+    <p> Заметка показывается один раз </p>
+    {% if message %}
+        <label> {{ message }} </label>
+    {% endif %}
+</body>
+</html>
