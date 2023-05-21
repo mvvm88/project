@@ -4,34 +4,13 @@
     <meta charset="UTF-8">
     <title>Notes</title>
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
-<!--    <style>-->
-<!--        input.text {-->
-<!--            width:  1235px;-->
-<!--            height: 500px;-->
-<!--            padding: 5px 100px 5px 10px;-->
-<!--            border:1px solid #999;-->
-<!--            font-size:16px;-->
-<!--            font-family: Tahoma;-->
-<!--            margin: auto;-->
-<!--        }-->
-<!--        -->
-<!--    </style>-->
 </head>
 <body>
-    <form action="" method="POST">
-        <input type="note" class="text" name="note">
+    <form action="/note_made" method="POST">
+        <textarea name="my_text"></textarea>
         <br>
         <br>
         <input type="submit">
     </form>
-    <br>
-    {% if message %}
-        <label> Ссылка на заметку: </label>
-        <a href="{{ message }}"> {{message}}. </a>
-        <br>
-        <p> По ссылке заметку можно открывать только 1 раз. </p>
-        <form action="http://127.0.0.1:5000/set_access">
-            <button> Установить параметры </button>
-        </form>
-    {% endif %}
-</body></html>
+</body>
+</html>

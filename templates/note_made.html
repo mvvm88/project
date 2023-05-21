@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Info</title>
+</head>
+<body>
+    <label> Ссылка на заметку: </label>
+    <a href="http://127.0.0.1:5000/notes/{{ message }}"> http://127.0.0.1:5000/notes/{{ message }}. </a>
+    <br>
+    <p> По ссылке заметку можно открывать только 1 раз. </p>
+    <form action="http://127.0.0.1:5000/set_access">
+        <button> Установить параметры </button>
+    </form>
+</body>
+</html>

@@ -98,27 +98,48 @@ class Crypt(object):
 
 @app.route('/', methods=["GET", "POST"])
 def note():
-    if request.method == 'POST' and list(request.form.values())[0]:
-        global link
-        link = hashlib.md5(list(request.form.values())[0].encode()).hexdigest()
-        connection = sqlite3.connect('database.db')
-        cursor = connection.cursor()
-        text = list(request.form.values())[0]
-        a = Crypt(key, blocks)
-        new_text = [ord(i) for i in text]
-        s = [str(a.encrypt(i)) for i in new_text]
-        cursor.execute(f"INSERT INTO data VALUES(?, ?);", (link, ' '.join(s)))
-        connection.commit()
-        connection1 = sqlite3.connect('database2.db')
-        cursor1 = connection1.cursor()
-        cursor1.execute("INSERT INTO notes_data VALUES(?, ?, ?, ?);", (link, 2592000, '', 0))
-        connection1.commit()
-        connection2 = sqlite3.connect('database3.db')
-        cursor2 = connection2.cursor()
-        cursor2.execute("INSERT INTO notes_time VALUES(?, ?, ?);", (link, 2592000, time.time_ns()))
-        connection2.commit()
-        return render_template('edit.html', message='http://127.0.0.1:5000/notes/' + link)
+    # if request.method == 'POST' and list(request.form.values())[0]:
+    #     global link
+    #     link = hashlib.md5(list(request.form.values())[0].encode()).hexdigest()
+    #     connection = sqlite3.connect('database.db')
+    #     cursor = connection.cursor()
+    #     text = list(request.form.values())[0]
+    #     a = Crypt(key, blocks)
+    #     new_text = [ord(i) for i in text]
+    #     s = [str(a.encrypt(i)) for i in new_text]
+    #     cursor.execute(f"INSERT INTO data VALUES(?, ?);", (link, ' '.join(s)))
+    #     connection.commit()
+    #     connection1 = sqlite3.connect('database2.db')
+    #     cursor1 = connection1.cursor()
+    #     cursor1.execute("INSERT INTO notes_data VALUES(?, ?, ?, ?);", (link, 2592000, '', 0))
+    #     connection1.commit()
+    #     connection2 = sqlite3.connect('database3.db')
+    #     cursor2 = connection2.cursor()
+    #     cursor2.execute("INSERT INTO notes_time VALUES(?, ?, ?);", (link, 2592000, time.time_ns()))
+    #     connection2.commit()
+    #     return render_template('edit.html', message='http://127.0.0.1:5000/notes/' + link)
     return render_template('edit.html')
+
+@app.route('/note_made', methods=['GET', 'POST'])
+def new_note():
+    my_text = request.form['my_text']
+    link = hashlib.md5(my_text.encode()).hexdigest()
+    connection = sqlite3.connect('database.db')
+    cursor = connection.cursor()
+    a = Crypt(key, blocks)
+    new_text = [ord(i) for i in my_text]
+    s = [str(a.encrypt(i)) for i in new_text]
+    cursor.execute(f"INSERT INTO data VALUES(?, ?);", (link, ' '.join(s)))
+    connection.commit()
+    connection1 = sqlite3.connect('database2.db')
+    cursor1 = connection1.cursor()
+    cursor1.execute("INSERT INTO notes_data VALUES(?, ?, ?, ?);", (link, 2592000, '', 0))
+    connection1.commit()
+    connection2 = sqlite3.connect('database3.db')
+    cursor2 = connection2.cursor()
+    cursor2.execute("INSERT INTO notes_time VALUES(?, ?, ?);", (link, 2592000, time.time_ns()))
+    connection2.commit()
+    return render_template('note_made.html', message=link)
 
 @app.route('/notes/<note_link>', methods=['GET', 'POST'])
 def get_note(note_link):
