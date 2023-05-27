@@ -3,14 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <title>Checking access</title>
+    <style>
+        body {
+        background: #e7e8d1;
+        }
+        .j {
+        height: 250px;
+        padding-top: 230px;
+        text-align: center;
+        border: 2px solid black;
+        background: #a7beae;
+        background-size: contain;
+        margin: auto;
+        margin-top: 50px;
+        padding: 3%;
+        }
+        .b1 {
+        background: #b85042;    color: white;
+        font-size: 12pt;    width: 120px;
+        height: 40px;
+        }
+        .btn {
+        background: #b85042;
+        color: white;
+        font-size: 12pt;
+        width: 228px;
+        height: 40px;
+        }
+    </style>
 </head>
-<body>
-    <form method="POST" action="">
-        <p> Введите пароль: </p>
-        <br>
-        <input type="password" name="password">
-        <br>
-        <input type="submit">
+    <body>
+    <form action="http://127.0.0.1:5000">
+        <button class="btn"> << На главную </button>
     </form>
-</body>
+    <form method="POST" action="">
+        <div class="j">
+            <h2> Введите пароль: </h2>
+            <br>
+            <br>
+            <input type="password" name="password">
+            <br>
+            <br>
+            <br>
+            <br>
+            <input type="submit" class="b1">
+        </div>
+    </form>
+    </body>
 </html>

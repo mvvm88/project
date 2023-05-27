@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect
 import sqlite3
 import hashlib
+from random import randint as rd
 import time
 
 app = Flask(__name__)
@@ -15,14 +16,10 @@ blocks = (
     (13, 11, 4, 1, 3, 15, 5, 9, 0, 10, 14, 7, 6, 8, 2, 12),
     (1, 15, 13, 0, 5, 7, 10, 4, 9, 2, 3, 14, 6, 11, 8, 12),
 )
-# ключ
-key = 18318279387912387912789378912379821879387978238793278872378329832982398023031
-
 
 #  получаем длину в битах
 def bit_length(value):
     return len(bin(value)[2:])  # удаляем '0b' в начале
-
 
 class Crypt(object):
     def __init__(self, key, sbox):
@@ -96,47 +93,54 @@ class Crypt(object):
             left_part, right_part = _decrypt_round(left_part, right_part, self._subkeys[(7 - i) % 8])
         return (left_part << 32) | right_part  # сливаем половинки вместе
 
+t = []
+
 @app.route('/', methods=["GET", "POST"])
 def note():
     return render_template('edit.html')
 
 @app.route('/note_made', methods=['GET', 'POST'])
 def new_note():
-    my_text = request.form['my_text']
-    link = hashlib.md5(my_text.encode()).hexdigest()
-    connection = sqlite3.connect('database.db')
-    cursor = connection.cursor()
-    a = Crypt(key, blocks)
-    new_text = [ord(i) for i in my_text]
-    s = [str(a.encrypt(i)) for i in new_text]
-    cursor.execute(f"INSERT INTO data VALUES(?, ?);", (link, ' '.join(s)))
-    connection.commit()
-    connection1 = sqlite3.connect('database2.db')
-    cursor1 = connection1.cursor()
-    cursor1.execute("INSERT INTO notes_data VALUES(?, ?, ?, ?);", (link, 2592000, '', 0))
-    connection1.commit()
-    connection2 = sqlite3.connect('database3.db')
-    cursor2 = connection2.cursor()
-    cursor2.execute("INSERT INTO notes_time VALUES(?, ?, ?);", (link, 2592000, time.time_ns()))
-    connection2.commit()
-    return render_template('note_made.html', message=link)
+    try:
+        my_text = request.form['my_text']
+        link = hashlib.md5(my_text.encode()).hexdigest()
+        connection = sqlite3.connect('database.db')
+        cursor = connection.cursor()
+        key = int(''.join([str(rd(0, 9)) for i in range(10)]))
+        a = Crypt(key, blocks)
+        new_text = [ord(i) for i in my_text]
+        s = [str(a.encrypt(i)) for i in new_text]
+        cursor.execute(f"INSERT INTO data VALUES(?, ?);", (link, ' '.join(s)))
+        connection.commit()
+        connection1 = sqlite3.connect('database2.db')
+        cursor1 = connection1.cursor()
+        cursor1.execute("INSERT INTO notes_data VALUES(?, ?, ?, ?);", (link, 2592000, '', 0))
+        connection1.commit()
+        connection2 = sqlite3.connect('database3.db')
+        cursor2 = connection2.cursor()
+        cursor2.execute("INSERT INTO notes_time VALUES(?, ?, ?);", (link, 2592000, time.time_ns()))
+        connection2.commit()
+        mes = link + '/' + str(key)
+        return render_template('note_made.html', message=mes)
+    except:
+        return render_template('note_made.html')
 
-@app.route('/notes/<note_link>', methods=['GET', 'POST'])
-def get_note(note_link):
+@app.route('/notes/<note_link>/<key>', methods=['GET', 'POST'])
+def get_note(note_link, key):
     connection1 = sqlite3.connect('database.db')
     cursor1 = connection1.cursor()
     connection3 = sqlite3.connect('database3.db')
     cursor3 = connection3.cursor()
     obj = cursor1.execute(f"SELECT * FROM data WHERE id='{note_link}'").fetchall()
     if len(obj):
-        text = obj[0][1].split()
-        a = Crypt(key, blocks)
-        s1 = [chr(a.decrypt(int(i))) for i in text]
         connection = sqlite3.connect('database2.db')
         cursor = connection.cursor()
         k = cursor.execute(f'select * from notes_data where id="{note_link}"').fetchall()
         flag, pw = k[0][3], k[0][2]
         if flag:
+            text = obj[0][1].split()
+            a = Crypt(int(key), blocks)
+            s1 = [chr(a.decrypt(int(i))) for i in text]
             cursor.execute(f"DELETE FROM notes_data WHERE id='{note_link}'")
             connection.commit()
             cursor1.execute(f"DELETE FROM data WHERE id='{note_link}'")
@@ -146,6 +150,9 @@ def get_note(note_link):
             return render_template('get_note.html', message=''.join(s1))
         elif pw == '':
             new_flag = 1
+            text = obj[0][1].split()
+            a = Crypt(int(key), blocks)
+            s1 = [chr(a.decrypt(int(i))) for i in text]
             cursor.execute(f"UPDATE notes_data SET flag = '{new_flag}' WHERE id = '{note_link}'")
             cursor.execute(f"DELETE FROM notes_data WHERE id='{note_link}'")
             connection.commit()
@@ -155,38 +162,45 @@ def get_note(note_link):
             connection3.commit()
             return render_template('get_note.html', message=''.join(s1))
         else:
-            return redirect(f'/{note_link}/check_access')
-    return render_template('get_note.html', message='Такой заметки не существует')
-    # return render_template('get_note.html')
+            return redirect(f'/{note_link}/{key}/check_access')
+    return render_template('get_note.html')
 
-@app.route('/set_access', methods=['GET', 'POST'])
-def set():
+@app.route('/<note_link>/<key>/set_access', methods=['GET', 'POST'])
+def set(note_link, key):
+    t.clear()
     if request.method == 'POST':
         try:
-            connection = sqlite3.connect('database.db')
-            cursor = connection.cursor()
-            note_id = cursor.execute(f"SELECT * FROM data").fetchall()[-1][0]
-            print(note_id)
+            print(note_link)
             time_list = list(request.form.values())
             print(time_list)
             note_time = int(time_list[0]) * 86400 + int(time_list[1]) * 3600 + int(time_list[2]) * 60 + int(time_list[3])
-            connection1 = sqlite3.connect('database2.db')
-            cursor1 = connection1.cursor()
-            cursor1.execute(f"UPDATE notes_data SET time = '{note_time}' WHERE id = '{note_id}'")
-            cursor1.execute(f"UPDATE notes_data SET password = '{time_list[4]}' WHERE id = '{note_id}'")
-            connection1.commit()
-            connection2 = sqlite3.connect('database3.db')
-            cursor2 = connection2.cursor()
-            cursor2.execute(f"UPDATE notes_time SET time = '{note_time}' WHERE id = '{note_id}'")
-            cursor2.execute(f"UPDATE notes_time SET start_time = '{time.time_ns() // 10**9}' WHERE id = '{note_id}'")
-            connection2.commit()
-            return redirect('/')
+            t.append(note_time)
+            t.append(time_list[4])
+            return redirect(f'/{note_link}/{key}/confirm')
         except:
             return render_template('set.html', message='Неправильно введенные данные')
     return render_template('set.html')
 
-@app.route('/<note_link>/check_access', methods=['GET', 'POST'])
-def check(note_link):
+@app.route('/<note_link>/<key>/confirm', methods=['GET', 'POST'])
+def confirm(note_link, key):
+    if request.method == 'POST':
+        note_time = t[0]
+        connection1 = sqlite3.connect('database2.db')
+        cursor1 = connection1.cursor()
+        cursor1.execute(f"UPDATE notes_data SET time = '{note_time}' WHERE id = '{note_link}'")
+        cursor1.execute(f"UPDATE notes_data SET password = '{t[1]}' WHERE id = '{note_link}'")
+        connection1.commit()
+        connection2 = sqlite3.connect('database3.db')
+        cursor2 = connection2.cursor()
+        cursor2.execute(f"UPDATE notes_time SET time = '{note_time}' WHERE id = '{note_link}'")
+        cursor2.execute(f"UPDATE notes_time SET start_time = '{time.time_ns() // 10 ** 9}' WHERE id = '{note_link}'")
+        connection2.commit()
+        t.clear()
+        return redirect('/')
+    return render_template('confirm.html', message=[note_link, key, t])
+
+@app.route('/<note_link>/<key>/check_access', methods=['GET', 'POST'])
+def check(note_link, key):
     if request.method == 'POST':
         try:
             psw = list(request.form.values())[0]
@@ -197,7 +211,7 @@ def check(note_link):
                 new_flag = 1
                 cursor.execute(f"UPDATE notes_data SET flag = '{new_flag}' WHERE id = '{note_link}'")
                 connection.commit()
-                return redirect(f'/notes/{note_link}')
+                return redirect(f'/notes/{note_link}/{key}')
             else:
                 return render_template('check.html', message='Неправильный пароль')
         except:
@@ -209,8 +223,6 @@ app.run()
 # connection = sqlite3.connect('database3.db')
 # cursor = connection.cursor()
 # cursor.execute('CREATE TABLE IF NOT EXISTS notes_time(id text, time integer, start_time integer);')
-# print(cursor.execute('select * from notes_data').fetchall()[-1])
-# print(cursor.execute('select * from notes_data where id="fcf688961714141ada12626df3f1d289"').fetchall()[0][2])
 # cursor.execute("CREATE TABLE IF NOT EXISTS notes_data(id text, time integer, password text, flag integer);")
 # connection.commit()
 # connection = sqlite3.connect('database.db')

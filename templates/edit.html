@@ -4,13 +4,29 @@
     <meta charset="UTF-8">
     <title>Notes</title>
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <style>
+        body {
+        background: #e7e8d1;
+        }
+       .txt {
+       background-color: #a7beae;
+       }
+       .b1 {
+        background: #b85042;    color: white;
+        font-size: 12pt;    width: 120px;
+        height: 40px;
+       }
+    </style>
 </head>
-<body>
-    <form action="/note_made" method="POST">
-        <textarea name="my_text"></textarea>
-        <br>
-        <br>
-        <input type="submit">
-    </form>
+    <body>
+    <div class="Edit">
+        <h2> Создать новую заметку </h2>
+        <form action="/note_made" method="POST">
+            <textarea cols="150" rows="30" name="my_text" class="txt" placeholder="Введите текст"></textarea>
+            <br>
+            <br>
+            <input type="submit" value="Сохранить" class="b1">
+        </form>
+    </div>
 </body>
 </html>

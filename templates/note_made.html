@@ -3,14 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <title>Info</title>
+    <style>
+        body {
+        background: #e7e8d1;
+        }
+        .h {
+        padding-top: 200px;
+        text-align: center;
+        }
+        .center {
+        text-align: center;
+        padding-top: 150px;
+        border: 2px solid black;
+        background: #a7beae;
+        background-size: contain;
+        margin: auto;
+        margin-top: 50px;
+        padding: 3%;
+        }
+        .btn {
+        background: #b85042;
+        color: white;
+        font-size: 12pt;
+        width: 228px;
+        height: 40px;
+        }
+    </style>
 </head>
-<body>
-    <label> Ссылка на заметку: </label>
-    <a href="http://127.0.0.1:5000/notes/{{ message }}"> http://127.0.0.1:5000/notes/{{ message }}. </a>
-    <br>
-    <p> По ссылке заметку можно открывать только 1 раз. </p>
-    <form action="http://127.0.0.1:5000/set_access">
-        <button> Установить параметры </button>
+    <body>
+    <form action="http://127.0.0.1:5000">
+        <button class="btn"> << На главную </button>
     </form>
-</body>
+    {% if message %}
+        <div class="center">
+            <h2> Ссылка на заметку: </h2>
+            <a href="http://127.0.0.1:5000/notes/{{ message }}"> http://127.0.0.1:5000/notes/{{ message }} </a>
+            <br>
+            <p> Скопируйте, после обновления ссылка пропадет. </p>
+            <p> По ссылке заметку можно открывать только 1 раз. </p>
+            <br>
+            <br>
+            <br>
+            <br>
+            <h3> Также вы можете установить время существования заметки (по умолчанию 1 месяц) и пароль для нее. </h3>
+            <br>
+            <br>
+            <form action="http://127.0.0.1:5000/{{ message }}/set_access">
+                <button class="btn"> Установить параметры </button>
+            </form>
+        </div>
+    {% else %}
+        <h2 class="h"> Невозможно зайти на страницу </h2>
+    {% endif %}
+    </body>
 </html>

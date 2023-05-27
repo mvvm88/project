@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Confirm</title>
+    <style>
+        body {
+        background: #e7e8d1;
+        }
+        .h {
+        text-align: center;
+        padding-top: 230px;
+        }
+        .container-buttons {
+         display: flex;
+         justify-content: space-around;
+        }
+        .s {
+        text-align: center;
+        padding-top: 230px;
+        border: 2px solid black;
+        background: #a7beae;
+        background-size: contain;
+        margin: auto;
+        margin-top: 140px;
+        padding: 3%;
+        }
+        .b1 {
+        background: #b85042;    color: white;
+        font-size: 12pt;    width: 120px;
+        height: 40px;
+        }
+    </style>
+</head>
+<body>
+    {% if message[2] %}
+        <div class="s">
+            <h2> Вы установили время заметки {{message[2][0] // 86400}} д. {{message[2][0] % 86400 // 3600}} ч. {{message[2][0] % 86400 % 3600 // 60}}
+                м. {{message[2][0] % 60}} с. </h2>
+            {% if message[2][1] %}
+                <h2> Пароль: {{message[2][1]}}. </h2>
+            {% else %}
+                <h2> Пароль не установлен. </h2>
+            {% endif %}
+            <br>
+            <br>
+            <br>
+            <div class="container-buttons">
+                <form action="http://127.0.0.1:5000/{{ message[0] }}/{{ message[1] }}/set_access">
+                    <button class="b1"> Отмена </button>
+                </form>
+                <form method="POST" action="">
+                    <input type="submit" value="Подтвердить" class="b1">
+                </form>
+            </div>
+        </div>
+    {% else %}
+        <h2 class="h"> Невозможно зайти на страницу </h2>
+    {% endif %}
+</body>
+</html>

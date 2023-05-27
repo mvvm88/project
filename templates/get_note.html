@@ -4,11 +4,39 @@
     <meta charset="UTF-8">
     <title>Note</title>
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <style>
+        body {
+        background: #e7e8d1;
+        }
+        .btn {
+        background: #b85042;
+        color: white;
+        font-size: 12pt;
+        width: 228px;
+        height: 40px;
+        }
+        .txt {
+        text-align: center;
+        }
+        .cls {
+        padding-top: 200px;
+        }
+        .txtarea {
+        background-color: #a7beae;
+        }
+    </style>
 </head>
-<body>
-    <p> Заметка показывается один раз </p>
-    {% if message %}
-        <label> {{ message }} </label>
-    {% endif %}
-</body>
+    <body>
+    <form action="http://127.0.0.1:5000">
+        <button class="btn"> << На главную </button>
+    </form>
+    <div class="txt">
+        {% if message %}
+        <h2> Заметка показывается один раз </h2>
+            <textarea cols="150" rows="30" disabled=disabled class="txtarea"> {{ message }} </textarea>
+        {% else %}
+            <h2 class="cls"> Такой заметки не существует </h2>
+        {% endif %}
+    </div>
+    </body>
 </html>
