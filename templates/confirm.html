@@ -5,7 +5,7 @@
     <title>Confirm</title>
     <style>
         body {
-        background: #e7e8d1;
+        background: #edede9;
         }
         .h {
         text-align: center;
@@ -17,13 +17,16 @@
         }
         .s {
         text-align: center;
-        padding-top: 230px;
+        padding-top: 150px;
         border: 2px solid black;
-        background: #a7beae;
+        background: #e3d5ca;
         background-size: contain;
         margin: auto;
-        margin-top: 140px;
-        padding: 3%;
+        margin-top: 97.8px;
+        padding: 9.8%;
+        }
+        .bbbb {
+        display:none;
         }
         .b1 {
         background: #b85042;    color: white;
@@ -38,7 +41,7 @@
             <h2> Вы установили время заметки {{message[2][0] // 86400}} д. {{message[2][0] % 86400 // 3600}} ч. {{message[2][0] % 86400 % 3600 // 60}}
                 м. {{message[2][0] % 60}} с. </h2>
             {% if message[2][1] %}
-                <h2> Пароль: {{message[2][1]}}. </h2>
+                <h2> Пароль: {{message[2][1]}}.
             {% else %}
                 <h2> Пароль не установлен. </h2>
             {% endif %}

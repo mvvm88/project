@@ -139,6 +139,7 @@ def get_note(note_link, key):
         flag, pw = k[0][3], k[0][2]
         if flag:
             text = obj[0][1].split()
+            print(text)
             a = Crypt(int(key), blocks)
             s1 = [chr(a.decrypt(int(i))) for i in text]
             cursor.execute(f"DELETE FROM notes_data WHERE id='{note_link}'")

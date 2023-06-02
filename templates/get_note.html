@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <title>Note</title>
-    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
     <style>
         body {
-        background: #e7e8d1;
+        background: #edede9;
         }
         .btn {
         background: #b85042;
@@ -22,7 +21,7 @@
         padding-top: 200px;
         }
         .txtarea {
-        background-color: #a7beae;
+        background-color: #e3d5ca;
         }
     </style>
 </head>
@@ -33,7 +32,7 @@
     <div class="txt">
         {% if message %}
         <h2> Заметка показывается один раз </h2>
-            <textarea cols="150" rows="30" disabled=disabled class="txtarea"> {{ message }} </textarea>
+            <textarea cols="150" rows="30" disabled=disabled class="txtarea">{{ message }} </textarea>
         {% else %}
             <h2 class="cls"> Такой заметки не существует </h2>
         {% endif %}
